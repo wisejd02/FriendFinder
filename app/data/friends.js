@@ -25,4 +25,4 @@ var friendsArray = [
   ];
   
   //export the array. This makes it accessible to other files using require.
-  module.exports = tableArray;
+  module.exports = friendsArray;
