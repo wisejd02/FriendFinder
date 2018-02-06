@@ -34,7 +34,7 @@ module.exports = function(app) {
   app.post("/api/friends", function(req, res) {
     // posting friends data
     // req.body is available since we're using the body-parser middleware
-    
+      console.log(req);
       friendsData.push(req.body);
       res.json(true);
   });
