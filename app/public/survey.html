@@ -59,39 +59,53 @@
         
         
         <script type="text/javascript">
-            var objSurvey = {
-                questions: [
-                    'Your mind is always buzzing with unexplored ideas and plans.',
-                    'Generally speaking, you rely more on your experience than your imagination.',
-                    'You find it easy to stay relaxed and focused even when there is some pressure.',
-                    'You rarely do something just out of sheer curiosity.', 'People can rarely upset you.',
-                    'It is often difficult for you to relate to other people’s feelings.',
-                    'In a discussion, truth should be more important than people’s sensitivities.',
-                    'You rarely get carried away by fantasies and ideas.',
-                    'You think that everyone’s views should be respected regardless of whether they are supported by facts or not.',
-                    'You feel more energetic after spending time with a group of people.'
-                ],
-                name: "",
-                photo: "",
-                answers: []
-            };
+            buildSurvey();
+            function buildSurvey() {
+                $("#divQuestions").empty();
+                $("#formMessage").remove();
+                var objSurvey = {
+                    questions: [
+                        'Your mind is always buzzing with unexplored ideas and plans.',
+                        'Generally speaking, you rely more on your experience than your imagination.',
+                        'You find it easy to stay relaxed and focused even when there is some pressure.',
+                        'You rarely do something just out of sheer curiosity.', 'People can rarely upset you.',
+                        'It is often difficult for you to relate to other people’s feelings.',
+                        'In a discussion, truth should be more important than people’s sensitivities.',
+                        'You rarely get carried away by fantasies and ideas.',
+                        'You think that everyone’s views should be respected regardless of whether they are supported by facts or not.',
+                        'You feel more energetic after spending time with a group of people.'
+                    ],
+                    name: "",
+                    photo: "",
+                    answers: []
+                };
+               
+                for (var i = 0; i < objSurvey.questions.length; i++)
+                    $("#divQuestions").append('<label for="exampleFormControlSelect1">' + objSurvey.questions[i] + '</label>' +
+                          '<select class="form-control answer" id="q' + i + '">' +
+                            '<option value=""></option>' +
+                            '<option value = "1">1 (Strongly Disagree)</option>' +
+                            '<option value = "2">2</option>' +
+                            '<option value = "3">3</option>' +
+                            '<option value = "4">4</option>' +
+                            '<option value = "5">5 (Strongly Agree)</option>' +
+                          '</select>')
+
+                // Capture the form inputs 
+                $("#submit").on("click", function () {
+                    populateAnswers(objSurvey);
+                    
+                });
+
+            }
             
-            for (var i = 0; i < objSurvey.questions.length; i++)
-                $("#divQuestions").append('<label for="exampleFormControlSelect1">' + objSurvey.questions[i] + '</label>' +
-                      '<select class="form-control answer" id="q' + i + '">' +
-                        '<option value=""></option>' +
-                        '<option value = "1">1 (Strongly Disagree)</option>' +
-                        '<option value = "2">2</option>' +
-                        '<option value = "3">3</option>' +
-                        '<option value = "4">4</option>' +
-                        '<option value = "5">5 (Strongly Agree)</option>' +
-                      '</select>')
-            // Capture the form inputs 
-            $("#submit").on("click", function () {
-                populateAnswers();
-            });
-            function populateAnswers() {
-                console.log(objSurvey);
+            
+            
+           
+            function populateAnswers(objSurvey) {
+                //console.log(objSurvey);
+                objSurvey.answers = [];
+                $("#formMessage").remove();
                 if (validateForm() == true) {
                     $('.answer').each(function () {
                         if ($(this).val()) {
@@ -105,7 +119,9 @@
                         objSurvey.photo = $('#photo').val();
                     }
                     clearForm();
+                    submitData(objSurvey);
                 } else {
+                   
                     $("#divQuestions").append('<div id="formMessage"><h2>Please fill out all fields before submitting!</h2></div>');
                 }
             }
@@ -113,7 +129,7 @@
                 $('.form-control').each(function () {
                     $(this).val("");
                 });
-                getFriendsList();
+               
             }
             // Form validation
             function validateForm() {
@@ -129,79 +145,52 @@
                 return isValid;
             }
             
-            function getFriendsList(){
-                var currentURL = window.location.origin;
-                $.ajax({ url: currentURL + "/api/friends", method: "GET" })
-                    .then(function(data) {
-
-                        // Here we are logging the URL so we have access to it for troubleshooting
-                        console.log("------------------------------------");
-                        console.log("URL: " + currentURL + "/api/tables");
-                        console.log("------------------------------------");
-
-                        // Here we then log the NYTData to console, where it will show up as an object.
-                        console.log(data);
-                        console.log("------------------------------------");
-                        friendsArray = data;
-                    
-                        compareToFriends(data);
-                    });
-            }
-            
-            function compareToFriends(data) {
-                var friendsArray = data;
-                var arrDiff = [];
-
-                $.each(friendsArray, function (key, value) {
-                    var sumDiff = 0;
-                    friendsArray[key].diffScores = [];
-                    $.each(friendsArray[key].scores, function (index, value) {
-                        var diff = Math.abs(parseInt(value) - parseInt(objSurvey.answers[index]))
-                        friendsArray[key].diffScores.push(diff)
-                        sumDiff += parseInt(diff);
-                    });
-                    arrDiff.push(sumDiff);
-                    friendsArray[key].totalDiff = sumDiff;
-                  
-                });
-                getNewFriend(arrDiff,friendsArray);
-            }
-            function getNewFriend(arrDiff,friendsArray) {
-                var lowestDiff = Math.min.apply(Math, arrDiff)
-                var count = 0;
-                console.log(lowestDiff);
-                $.each(friendsArray, function (key, value) {
-                    if (friendsArray[key].totalDiff == lowestDiff) {
-                        $(".modal-body").append(
-                        '<h2 id="' + friendsArray[key].name + '">'+friendsArray[key].name+'</h2>' +
-                        '<img id=img"' + friendsArray[key].name + '" src="' + friendsArray[key].photo + '" alt="picture of ' + friendsArray[key].name + '" width="400" height="400">');
-                        count++;
-                        if (count > 1) {
-                            $(".modal-title").html("Best Matches")
-                        } else {
-                            $(".modal-title").html("Best Match")
-                        }
-                    }
-                });
-                // Show the modal with the best match 
-                $("#resultsModal").modal('toggle');
-                submitData();
-            };
-            // If all required fields are filled
-            function submitData() {
+           
+            // If all required fields are filled out
+            function submitData(objSurvey) {
                 
                     // Create an object for the user's data
                     var userData = {
                         name: objSurvey.name,
                         photo: objSurvey.photo,
-                        scores: objSurvey.answers
+                        scores: JSON.stringify(objSurvey.answers)
                     }
                     // Grab the URL of the website
                     var currentURL = window.location.origin;
                     // AJAX post the data to the friends API. 
                     $.post(currentURL + "/api/friends", userData, function (data) {
+                        var count = 0;
+                        console.log('count');
+                        console.log(count);
+                        console.log('data');
+                        console.log(data);
+                        var results = JSON.parse(data);
+                        console.log('results');
+                        console.log(results)
+                        $.each(results, function (key, value) {
+                            console.log('value');
+                            console.log(value);
+                            //show all friends that have same diff 
+                            $(".modal-body").append(
+                            '<h2 id="' + value.name + '">' + value.name + '</h2>' +
+                            '<img id=img"' + value.name + '" src="' + value.photo + '" alt="picture of ' + value.name + '" width="400" height="400">');
+                            count++;
+                            if (count > 1) {
+                                $(".modal-title").html("Best Matches")
+                            } else {
+                                $(".modal-title").html("Best Match")
+                            }
+                        });
+
+                            
+                        // Show the modal with the best match 
+                        $("#resultsModal").modal('toggle');
+                        $("#resultsModal").on("hidden.bs.modal", function () {
+                            $(".modal-body").empty();
+                            $("#formMessage").remove();
+                        });
                     });
-                    
+                    buildSurvey();
             }
         </script>
 </body>
