@@ -49,94 +49,12 @@
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-        <script src="https://code.jquery.com/jquery.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        
         <script type="text/javascript">
-            var friendsArray //= [
-    // {
-    //     "name": "Ahmed",
-    //     "photo": "https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/064/1bd/3435aa3.jpg",
-    //     "scores": [
-    //         5,
-    //         1,
-    //         4,
-    //         4,
-    //         5,
-    //         1,
-    //         2,
-    //         5,
-    //         4,
-    //         1
-    //     ]
-    // },
-    //  {
-    //      "name": "A2",
-    //      "photo": "https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/064/1bd/3435aa3.jpg",
-    //      "scores": [
-    //          1,
-    //          2,
-    //          3,
-    //          4,
-    //          5,
-    //          1,
-    //          2,
-    //          3,
-    //          4,
-    //          5
-    //      ]
-    //  },
-    //   {
-    //       "name": "A3",
-    //       "photo": "https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/064/1bd/3435aa3.jpg",
-    //       "scores": [
-    //           5,
-    //           1,
-    //           1,
-    //           5,
-    //           1,
-    //           1,
-    //           5,
-    //           1,
-    //           1,
-    //           5
-    //       ]
-    //   },
-    //    {
-    //        "name": "A4",
-    //        "photo": "https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/064/1bd/3435aa3.jpg",
-    //        "scores": [
-    //            2,
-    //            3,
-    //            2,
-    //            3,
-    //            2,
-    //            3,
-    //            2,
-    //            3,
-    //            2,
-    //            3
-    //        ]
-    //    },
-    //     {
-    //         "name": "A5",
-    //         "photo": "https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/064/1bd/3435aa3.jpg",
-    //         "scores": [
-    //             3,
-    //             3,
-    //             3,
-    //             3,
-    //             3,
-    //             4,
-    //             4,
-    //             4,
-    //             4,
-    //             4
-    //         ]
-    //     }
-    //         ];
             var objSurvey = {
                 questions: [
                     'Your mind is always buzzing with unexplored ideas and plans.',
@@ -153,7 +71,7 @@
                 photo: "",
                 answers: []
             };
-            //console.log(friendsData);
+            
             for (var i = 0; i < objSurvey.questions.length; i++)
                 $("#divQuestions").append('<label for="exampleFormControlSelect1">' + objSurvey.questions[i] + '</label>' +
                       '<select class="form-control answer" id="q' + i + '">' +
@@ -191,7 +109,7 @@
                 $('.form-control').each(function () {
                     $(this).val("");
                 });
-                compareToFriends();
+                getFriendsList();
             }
             // Form validation
             function validateForm() {
@@ -207,10 +125,7 @@
                 return isValid;
             }
             
-            
-            function compareToFriends() {
-                //objSurvey.answers = [5, 5, 4, 2, 4, 4, 1, 1, 3, 3];
-                var arrDiff = [];
+            function getFriendsList(){
                 var currentURL = window.location.origin;
                 $.ajax({ url: currentURL + "/api/friends", method: "GET" })
                     .then(function(data) {
@@ -224,27 +139,16 @@
                         console.log(data);
                         console.log("------------------------------------");
                         friendsArray = data;
-                        //  // Loop through and display each of the customers
-                        // for (var i = 0; i < data.length; i++) {
-
-                        // // Create the HTML Well (Section) and Add the table content for each reserved table
-                        // var tableSection = $("<div>");
-                        // tableSection.addClass("well");
-                        // tableSection.attr("id", "tableWell-" + i + 1);
-                        // $("#tableSection").append(tableSection);
-
-                        // var tableNumber = i + 1;
-
-
-                        // // Then display the remaining fields in the HTML (Section Name, Date, URL)
-                        // $("#tableWell-" + i + 1).append("<h2><span class='label label-primary'>" + tableNumber + "</span> | " + tableData[i].customerID + "</h2>");
-                        // }
+                    
+                        compareToFriends(data);
                     });
-                 
-                // app.get("/api/friends", function (req, res) {
-                //     friendsArray = res.json(friendsData);
-                // });
-                console.log(objFreinds);
+            }
+            
+            function compareToFriends(data) {
+                //objSurvey.answers = [5, 5, 4, 2, 4, 4, 1, 1, 3, 3];
+                var friendsArray = data;
+                var arrDiff = [];
+
                 $.each(friendsArray, function (key, value) {
                     var sumDiff = 0;
                     //console.log(friendsArray[key].name);
@@ -262,9 +166,9 @@
                 });
                 //console.log(friendsArray);
                 //console.log(arrDiff);
-                getNewFriend(arrDiff);
+                getNewFriend(arrDiff,friendsArray);
             }
-            function getNewFriend(arrDiff) {
+            function getNewFriend(arrDiff,friendsArray) {
                 var lowestDiff = Math.min.apply(Math, arrDiff)
                 var count = 0;
                 console.log(lowestDiff);
