@@ -10,8 +10,6 @@
         <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>   
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <!-- Optional theme -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <!-- Latest compiled and minified CSS -->
@@ -67,7 +65,6 @@
         <script type="text/javascript">
             buildSurvey();
             function buildSurvey() {
-                $("#divQuestions").empty();
                 $("#formMessage").remove();
                 var objSurvey = {
                     questions: [
@@ -85,11 +82,11 @@
                     photo: "",
                     answers: []
                 };
-                
-                for (var i = 0; i < objSurvey.questions.length; i++){
+                if(!isform){
+                    for (var i = 0; i < objSurvey.questions.length; i++){
                     $("#divQuestions").append(
                         '<label for="q' + i + '">' + objSurvey.questions[i] + '</label>' +
-                        '<select class="form-control answer selectpicker btn-info " id="q' + i + '">' +
+                        '<select class="form-control answer selectpicker" id="q' + i + '">' +
                             '<option value=""></option>' +
                             '<option value = "1">1 (Strongly Disagree)</option>' +
                             '<option value = "2">2</option>' +
@@ -97,11 +94,13 @@
                             '<option value = "4">4</option>' +
                             '<option value = "5">5 (Strongly Agree)</option>' +
                         '</select>')
+                    }
+                    var isform = true;
                 }
+ 
                 // Capture the form inputs 
                 $("#submit").on("click", function () {
-                    populateAnswers(objSurvey);
-                        
+                    populateAnswers(objSurvey);    
                 });
 
             }
@@ -124,14 +123,16 @@
                     clearForm();
                     submitData(objSurvey);
                 } else {
-                    
-                        $("#divQuestions").append('<div id="formMessage"><h2>Please fill out all fields before submitting!</h2></div>');
+                    $("#divQuestions").append('<div id="formMessage"><h2>Please fill out all fields before submitting!</h2></div>');
                 }
             }
             function clearForm() {
                 $('.form-control').each(function () {
                     $(this).val("");
+                    
                 });
+                $('.selectpicker').selectpicker('val', '');
+                $('.selectpicker').selectpicker('refresh');
             
             }
             // Form validation
@@ -185,7 +186,7 @@
                         $("#formMessage").remove();
                     });
                 });
-                buildSurvey();
+                
             }
         </script>
     </body>
